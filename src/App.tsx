@@ -1,8 +1,17 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
+import ChatPrompt from './chatPrompt'; 
 
 function App() {
+  const [isOpen, setIsOpen] = useState<boolean>(true); //for chatPrompt
+  const handleSend = (message: string) => {
+    console.log("message sent:", message);
+  }
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -19,6 +28,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <ChatPrompt isOpen={isOpen} onSend={handleSend} onClose={handleClose} />
     </div>
   );
 }
