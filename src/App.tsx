@@ -4,8 +4,6 @@ import Button from "@mui/joy/Button";
 import Grid from "@mui/joy/Grid";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
-import Option from "@mui/joy/Option";
-import Select from "@mui/joy/Select";
 import Stack from "@mui/joy/Stack";
 import Textarea from "@mui/joy/Textarea";
 import SendIcon from "@mui/icons-material/Send";
@@ -13,19 +11,28 @@ import { motion, AnimatePresence } from "framer-motion";
 import awsconfig from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import { useLambdaCall } from "./functions/lambda";
+import CustomDropdown from "./components/Dropdown";
+import { Input } from "@mui/joy";
+
 Amplify.configure(awsconfig);
 // Work-arounds to use material UI content:
 
 function App() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [link, setLink] = useState("");
   const [messages, setMessages] = useState<
     Array<{ author: "user" | "bot"; content: string }>
   >([]);
   const [shouldFetch, setShouldFetch] = useState(false);
-  const { isLoading, data } = useLambdaCall({
+  const { isLoading, data } = useLambdaCall(link, {
     enabled: shouldFetch,
   });
+
+  useEffect(() => {
+    setLink("");
+    setShouldFetch(false);
+  }, [isModalOpen]);
 
   const handleSendClick = () => {
     // Handle the submission of the prompt here
@@ -47,6 +54,11 @@ function App() {
 
     // Optionally, clear the prompt after submission
     setPrompt("");
+  };
+  const handleSubmit = async () => {
+    setShouldFetch(true);
+    // Call your API with the link here. This is just a placeholder.
+    // You should replace this with your actual API call logic.
   };
 
   return (
@@ -88,18 +100,7 @@ function App() {
         >
           {/* Drop-Down */}
           <Grid xs={6}>
-            <Select defaultValue="" sx={{ width: "100%", color: "black" }}>
-              <Option value="" disabled>
-                Select a Doc
-              </Option>
-              <Option value="">Select a Doc</Option>
-              {/* TODO: Load these from AWS: */}
-
-              <Option value="dog">Dog</Option>
-              <Option value="cat">Cat</Option>
-              <Option value="fish">Fish</Option>
-              <Option value="bird">Bird</Option>
-            </Select>
+            <CustomDropdown />
           </Grid>
           {/* Button */}
           <Grid xs={6} style={{ textAlign: "right" }}>
@@ -108,7 +109,7 @@ function App() {
               color="primary"
               onClick={() => setModalOpen(true)}
             >
-              Learn New Documents
+              Learn documentation
             </Button>{" "}
             {/* Button on the right */}
           </Grid>
@@ -117,26 +118,34 @@ function App() {
       {/* New Doc Modal */}
       <Modal open={isModalOpen} onClose={() => setModalOpen(false)}>
         <ModalDialog>
-          <h2>Modal Title</h2>
-          <p>
-            This is the content of the modal. You can place any component or
-            content here.
-          </p>
-          <Button
-            variant="solid"
-            color="neutral"
-            onClick={() => setShouldFetch(true)}
-          >
-            Call Lambda
+          <h2>Add new documentation</h2>
+          <Input
+            placeholder="Enter doc link..."
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            sx={{
+              "&::before": {
+                border: "1.5px solid var(--Input-focusedHighlight)",
+                transform: "scaleX(0)",
+                left: "2.5px",
+                right: "2.5px",
+                bottom: 0,
+                top: "unset",
+                transition: "transform .15s cubic-bezier(0.1,0.9,0.2,1)",
+                borderRadius: 0,
+                borderBottomLeftRadius: "64px 20px",
+                borderBottomRightRadius: "64px 20px",
+              },
+              "&:focus-within::before": {
+                transform: "scaleX(1)",
+              },
+            }}
+          />
+
+          <Button variant="solid" color="neutral" onClick={handleSubmit}>
+            Submit Link
           </Button>
           <p>{isLoading ? "loading" : data}</p>
-          <Button
-            variant="solid"
-            color="neutral"
-            onClick={() => setModalOpen(false)}
-          >
-            Close Modal
-          </Button>
         </ModalDialog>
       </Modal>
       {/* Rest of the app content */}

@@ -9,12 +9,13 @@ const client = new LambdaClient({
   },
 });
 
-const input = {
-  FunctionName: "carterTest",
-};
-const command = new InvokeCommand(input);
+export async function lambdaCall(inputData: string) {
+  const input = {
+    FunctionName: "carterTest",
+    Payload: JSON.stringify(inputData), // Pass the inputData as the Payload
+  };
+  const command = new InvokeCommand(input);
 
-export async function lambdaCall() {
   try {
     const response = await client.send(command);
 
@@ -31,6 +32,6 @@ export async function lambdaCall() {
   }
 }
 
-export const useLambdaCall = (options = {}) => {
-  return useQuery("call", lambdaCall, options);
+export const useLambdaCall = (inputData: string, options = {}) => {
+  return useQuery(["call", inputData], () => lambdaCall(inputData), options);
 };
