@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import './App.css';
 import Button from '@mui/joy/Button';
 import Grid from '@mui/joy/Grid';
@@ -7,24 +7,63 @@ import Modal from '@mui/joy/Modal';
 import ModalDialog from '@mui/joy/ModalDialog';
 import Option from '@mui/joy/Option';
 import Select from '@mui/joy/Select';
+import Stack from '@mui/joy/Stack';
 import Textarea from '@mui/joy/Textarea';
+
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Work-arounds to use material UI content:
 import { CssVarsProvider } from '@mui/joy/styles';
 import SendIcon from '@mui/icons-material/Send';
 
+const TypingEffect = ({ message }: { message: string }) => {
+    const [visibleMessage, setVisibleMessage] = useState('');
+    const [index, setIndex] = useState(0);
+    const [isTyping, setIsTyping] = useState(true);
+
+    useEffect(() => {
+        if (index < message.length) {
+            const randomDelay = Math.floor(Math.random() * (120 - 30 + 1) + 30); // Generate random delay between 30ms to 120ms
+
+            const timeoutId = setTimeout(() => {
+                setVisibleMessage((prevMessage) => prevMessage + message[index]);
+                setIndex((prevIndex) => prevIndex + 1);
+            }, randomDelay);
+
+            return () => clearTimeout(timeoutId);
+        } else {
+            setIsTyping(false); // Set isTyping to false once the message is fully typed
+        }
+    }, [message, index]);
+
+    return (
+        <>
+            {visibleMessage}
+            {isTyping && <span className="blinking-cursor">|</span>}
+        </>
+    );
+};
+
+
+
 function App() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [prompt, setPrompt] = useState('');
+    const [userMessage, setUserMessage] = useState<string | null>(null);
+    const [botReply, setBotReply] = useState<string | null>(null);
+    const [messages, setMessages] = useState<Array<{ author: 'user' | 'bot', content: string }>>([]);
 
     const handleSendClick = () => {
         // Handle the submission of the prompt here
-        console.log(prompt);
+        const newUserMessage: { author: 'user' | 'bot', content: string } = { author: 'user', content: prompt };
+        const newBotReply: { author: 'user' | 'bot', content: string } = { author: 'bot', content: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi autem omnis itaque ex aspernatur quasi expedita ad quos. Est illo maiores atque esse ratione praesentium ullam modi? Temporibus, dolores quod." }; 
+        
+        setMessages(prevMessages => [...prevMessages, newUserMessage, newBotReply]);
+    
+        // Optionally, clear the prompt after submission
+        setPrompt('');
     };
 
-    // const BlackSendIcon = styled(SendIcon)({
-    //     color: 'black'
-    // });
 
     return(
         // <CssVarsProvider>
@@ -63,9 +102,11 @@ function App() {
                 </Modal>
                 {/* Rest of the app content */}
                 <div>
-                    <div style={{ margin: '1rem 2vw', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ margin: '1rem 0vw', display: 'flex', justifyContent: 'center' }}>
+                    {/* Start of stack holding prompt and dialogue */}
+                    <Stack spacing={2} direction="column" sx={{ width: '100%' }}>
                         {/* Grid holding Input and Submit Icon/Button */}
-                        <Grid container spacing={2} alignItems="center" style={{ maxWidth: '800px', width:'80vw' }}>
+                        <Grid container spacing={2} alignItems="center" style={{ maxWidth: '800px', width:'80%', margin: 'auto' }}>
                             <Grid xs={12}>
                                 <div style={{ 
                                     display: 'flex', 
@@ -133,6 +174,40 @@ function App() {
                                 </div>
                             </Grid>
                         </Grid>
+                        {/* Map the conversation */}
+                        {messages.map((message, index) => (
+                            <div 
+                                key={index} 
+                                style={{
+                                    backgroundColor: message.author === 'user' ? '#3c3c3c' : '#2b2b2b',
+                                    padding: '1rem',
+                                    borderRadius: '4px',
+                                    marginTop: '1rem',
+                                    color: message.author === 'user' ? '#c3c3c3' : '#e1e1e1',
+                                    wordWrap: 'break-word',         // Add this
+                                    overflowWrap: 'break-word',     // Add this
+                                    maxWidth: '100%',               // Add this (or adjust as needed)
+                                }}
+                            >
+                                <div style={{  width: '80%', margin: 'auto', padding: '1vh 0vw 1vh 0vw'}}>
+                                {message.author === 'bot' ? 
+                                    <AnimatePresence>
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                        >
+                                            <TypingEffect message={message.content} />
+                                        </motion.div>
+                                    </AnimatePresence>
+                                    :
+                                    message.content
+                                }
+                                </div>
+                            </div>
+                        ))}
+                        </Stack>
+                        {/* 4c4c4c */}
                     </div>
                 </div>
             </div>
