@@ -1,4 +1,5 @@
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
+import { useQuery } from "react-query";
 
 const client = new LambdaClient({
   region: "us-east-1",
@@ -23,8 +24,13 @@ export async function lambdaCall() {
     // Extract the message from the parsed payload
     const message = payload.body;
 
-    console.log("Message from Lambda:", message);
+    // console.log("Message from Lambda:", message);
+    return message;
   } catch (error) {
     console.error("Error calling Lambda", error);
   }
 }
+
+export const useLambdaCall = (options = {}) => {
+  return useQuery("call", lambdaCall, options);
+};

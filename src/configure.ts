@@ -16,7 +16,7 @@ const ssmClientConfig: SSMClientConfig = {
   region: REGION,
 };
 
-if (true) {
+if (false) {
   ssmClientConfig.credentials = fromSSO({ profile: PROFILE });
   console.log("RUNNING IN LOCAL CONFIG");
 }
@@ -36,7 +36,7 @@ async function fetchParameters() {
       REACT_APP_SECRET_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
       REACT_APP_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
         `;
-
+    console.log(envContent);
     const formattedEnv = envContent
       .split("\n")
       .map((line) => line.trim())
