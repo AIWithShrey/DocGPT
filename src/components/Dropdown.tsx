@@ -5,7 +5,7 @@ import Select, { SelectOption } from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 import ArticleIcon from "@mui/icons-material/Article";
 import { useState } from "react";
-import { useLambdaCall } from "../functions/lambda";
+import { usePromptGpt4 } from "../functions/lambda";
 
 const options = [
   { value: "mui", label: "MUI" },
@@ -28,16 +28,20 @@ function renderValue(option: SelectOption<string> | null) {
   );
 }
 
-export default function CustomDropdown() {
-  const [selectedOption, setSelectedOption] = useState(options[0].value); // Introducing state for the current selection
+interface CustomDropdownProps {
+  prompt: string;
+}
+
+export default function CustomDropdown(props: CustomDropdownProps) {
+  const [selectedOption, setSelectedOption] = useState(""); // Default state is empty, indicating no initial selection
   const [shouldFetch, setShouldFetch] = useState(false);
-  const { isLoading, data } = useLambdaCall(selectedOption, {
+  const { isLoading, data } = usePromptGpt4(selectedOption, props.prompt, {
     enabled: shouldFetch,
   });
 
   return (
     <Select
-      value={selectedOption} // Use the state as the current value
+      value={selectedOption}
       onChange={(_, value) => {
         if (value) {
           setSelectedOption(value);
@@ -56,6 +60,9 @@ export default function CustomDropdown() {
       }}
       renderValue={renderValue}
     >
+      {/* Add the prompt option */}
+      <Option value="">{props.prompt}</Option>
+
       {options.map((option, index) => (
         <React.Fragment key={option.value}>
           {index !== 0 ? <ListDivider role="none" /> : null}

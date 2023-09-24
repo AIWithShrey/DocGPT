@@ -10,7 +10,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { motion, AnimatePresence } from "framer-motion";
 import awsconfig from "./aws-exports";
 import { Amplify } from "aws-amplify";
-import { useLambdaCall } from "./functions/lambda";
+import { useInputDocUrl } from "./functions/lambda";
 import CustomDropdown from "./components/Dropdown";
 import { Input } from "@mui/joy";
 
@@ -25,7 +25,7 @@ function App() {
     Array<{ author: "user" | "bot"; content: string }>
   >([]);
   const [shouldFetch, setShouldFetch] = useState(false);
-  const { isLoading, data } = useLambdaCall(link, {
+  const { isLoading, data } = useInputDocUrl(link, "GET", {
     enabled: shouldFetch,
   });
 
@@ -100,7 +100,7 @@ function App() {
         >
           {/* Drop-Down */}
           <Grid xs={6}>
-            <CustomDropdown />
+            <CustomDropdown prompt={prompt} />
           </Grid>
           {/* Button */}
           <Grid xs={6} style={{ textAlign: "right" }}>
