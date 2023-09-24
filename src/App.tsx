@@ -12,6 +12,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { motion, AnimatePresence } from "framer-motion";
 import awsconfig from "./aws-exports";
 import { Amplify } from "aws-amplify";
+import { lambdaCall } from "./functions/lambda";
 Amplify.configure(awsconfig);
 // Work-arounds to use material UI content:
 
@@ -117,6 +118,9 @@ function App() {
             This is the content of the modal. You can place any component or
             content here.
           </p>
+          <Button variant="solid" color="neutral" onClick={() => lambdaCall()}>
+            Call Lambda
+          </Button>
           <Button
             variant="solid"
             color="neutral"
