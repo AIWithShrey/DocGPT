@@ -26,17 +26,21 @@ const ssmClient = new SSMClient(ssmClientConfig);
 async function fetchParameters() {
   try {
     const accessId = new GetParameterCommand({
-      Name: "accessId",
+      Name: "accessKey",
+      WithDecryption: true,
+    });
+    const secretKey = new GetParameterCommand({
+      Name: "secretKey",
       WithDecryption: true,
     });
 
     const accessIdResponse = await ssmClient.send(accessId);
-
+    const secretKeyResponse = await ssmClient.send(secretKey);
     const envContent = `
       REACT_APP_SECRET_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
-      REACT_APP_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
+      REACT_APP_ACCESS_KEY=${secretKeyResponse.Parameter?.Value}
         `;
-    console.log(envContent);
+
     const formattedEnv = envContent
       .split("\n")
       .map((line) => line.trim())

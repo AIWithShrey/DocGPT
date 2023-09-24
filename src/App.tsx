@@ -12,14 +12,13 @@ import SendIcon from "@mui/icons-material/Send";
 import { motion, AnimatePresence } from "framer-motion";
 import awsconfig from "./aws-exports";
 import { Amplify } from "aws-amplify";
-import { lambdaCall, useLambdaCall } from "./functions/lambda";
+import { useLambdaCall } from "./functions/lambda";
 Amplify.configure(awsconfig);
 // Work-arounds to use material UI content:
 
 function App() {
   const [isModalOpen, setModalOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const [message, setMessage] = useState<Promise<any>>();
   const [messages, setMessages] = useState<
     Array<{ author: "user" | "bot"; content: string }>
   >([]);
@@ -27,10 +26,6 @@ function App() {
   const { isLoading, data } = useLambdaCall({
     enabled: shouldFetch,
   });
-
-  useEffect(() => {
-    console.log(message);
-  }, [message]);
 
   const handleSendClick = () => {
     // Handle the submission of the prompt here
@@ -53,15 +48,7 @@ function App() {
     // Optionally, clear the prompt after submission
     setPrompt("");
   };
-  const handleTestClick = () => {
-    lambdaCall()
-      .then((response) => setMessage(response))
-      .catch((err) => {
-        console.log(err);
-      });
 
-    console.log(lambdaCall());
-  };
   return (
     // <CssVarsProvider>
     <div style={{ backgroundColor: "#2b2b2b", minHeight: "100vh" }}>
