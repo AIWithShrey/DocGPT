@@ -1,202 +1,143 @@
 import React, {useState} from 'react';
 import './App.css';
-import ChatPrompt from './chatPrompt'; 
-import AddDocButton from './AddDocButton';
-import { Grid, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button, Typography } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import MenuItem from '@mui/material/MenuItem'; //to delete?
-import Select from '@mui/joy/Select'; //keep
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import Box from '@mui/material/Box';
-import {
-  experimental_extendTheme as materialExtendTheme,
-  Experimental_CssVarsProvider as MaterialCssVarsProvider,
-  THEME_ID as MATERIAL_THEME_ID,
-} from '@mui/material/styles';
-import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy/styles';
-import { useColorScheme as useJoyColorScheme } from '@mui/joy/styles';
-import { useColorScheme as useMaterialColorScheme } from '@mui/material/styles';
+import Button from '@mui/joy/Button';
+import Grid from '@mui/joy/Grid';
+import Input from '@mui/joy/Input';
+import Modal from '@mui/joy/Modal';
+import ModalDialog from '@mui/joy/ModalDialog';
+import Option from '@mui/joy/Option';
+import Select from '@mui/joy/Select';
+import Textarea from '@mui/joy/Textarea';
 
-const materialTheme = materialExtendTheme();
+// Work-arounds to use material UI content:
+import { CssVarsProvider } from '@mui/joy/styles';
+import SendIcon from '@mui/icons-material/Send';
 
 function App() {
-  const [darkMode, setDarkMode] = useState<boolean>(false); //dark mode states
-  const [isOpen] = useState<boolean>(true); //for chatPrompt
-  const [isModalOpen, setModalOpen] = useState<boolean>(false); //for addDoc modal
-  const [message, setMessage] = useState<string | null>(null); //new state for msg
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null); // for select and option tags
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [prompt, setPrompt] = useState('');
 
-  const handleSelectChange = (value: string) => {
-      setSelectedOption(value);
-      // Handle other logic based on the selected option if needed
-      console.log("Selected Option:", value);
-  };
-  const handleSend = (message: string) => {
-    console.log("message sent:", message);
-    setMessage(message);  // Update the message state with the sent message
-  }
-  const handleNewDoc = () => {
-    console.log("new doc clicked");
-    setModalOpen(true);
-  }
-  const handleCloseModal = () => {
-    setModalOpen(false); 
-  }
-
-  const headerBackgroundColor = darkMode ? '#434343' : '#e0e0e0';
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light', //set mode based on state
-      background: {
-        default: darkMode ? '#303030' : '#fafafa', //bkg colors
-      },
-      text: {
-        primary: darkMode ? '#e0e0e0' : '#333', //txt colors
-      },
-    },
-  })
-
-  const handleConversationClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleConversationClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleChange = () => {
-    console.log('change')
-  };
-
-  const ModeToggle = () => {
-    const { mode, setMode: setMaterialMode } = useMaterialColorScheme();
-    const { setMode: setJoyMode } = useJoyColorScheme();
-    const toggleMode = () => {
-      const newMode = mode === 'dark' ? 'light' : 'dark';
-      setMaterialMode(newMode);
-      setJoyMode(newMode);
+    const handleSendClick = () => {
+        // Handle the submission of the prompt here
+        console.log(prompt);
     };
-    return (
-      <Button onClick={toggleMode}>
-        {mode === 'dark' ? 'Light Mode' : 'Dark Mode'}
-      </Button>
+
+    // const BlackSendIcon = styled(SendIcon)({
+    //     color: 'black'
+    // });
+
+    return(
+        // <CssVarsProvider>
+            <div style={{ backgroundColor: '#2b2b2b', minHeight: '100vh' }}> {/* Dark background for the entire app */}
+                <div style={{ backgroundColor: '#1E1E1E', padding: '1rem 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> {/* Dark header */}
+                        {/* Title on the left */}
+                        <h1 style={{ color: 'white', margin: '0vh 0vw 0vh 3vw', textAlign: 'left' }}>DocGPT</h1> 
+                        {/* Nested Grid for Button and Drop-Down*/}
+                        <Grid container spacing={2} sx={{ margin: '0 2vw', alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                            {/* Drop-Down */}
+                            <Grid xs={6}>
+                                <Select defaultValue="" sx={{ width: '100%', color: 'black' }}>
+                                    <Option value="" disabled>Select a Doc</Option>
+                                    <Option value="">Select a Doc</Option>
+                                    {/* TODO: Load these from AWS: */}
+
+                                    <Option value="dog">Dog</Option>
+                                    <Option value="cat">Cat</Option>
+                                    <Option value="fish">Fish</Option>
+                                    <Option value="bird">Bird</Option>
+                                </Select>
+                            </Grid>
+                            {/* Button */}
+                            <Grid xs={6} style={{ textAlign: 'right' }}>
+                                <Button variant="solid" color="primary" onClick={() => setModalOpen(true)}>Learn New Documents</Button> {/* Button on the right */}
+                            </Grid>
+                        </Grid>
+                </div>
+                {/* New Doc Modal */}
+                <Modal open={isModalOpen} onClose={() => setModalOpen(false)}>
+                    <ModalDialog>
+                        <h2>Modal Title</h2>
+                        <p>This is the content of the modal. You can place any component or content here.</p>
+                        <Button variant="solid" color="neutral" onClick={() => setModalOpen(false)}>Close Modal</Button>
+                    </ModalDialog>
+                </Modal>
+                {/* Rest of the app content */}
+                <div>
+                    <div style={{ margin: '1rem 2vw', display: 'flex', justifyContent: 'center' }}>
+                        {/* Grid holding Input and Submit Icon/Button */}
+                        <Grid container spacing={2} alignItems="center" style={{ maxWidth: '800px', width:'80vw' }}>
+                            <Grid xs={12}>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    backgroundColor: '#4c4c4c', // The same color as the text box's background
+                                    borderRadius: '4px', // To match the Input component's border radius
+                                    overflow: 'hidden'  // To keep child elements within the rounded corner boundary
+                                }}> 
+                                        <Textarea
+                                            placeholder="Enter your prompt here…" 
+                                            minRows={1}
+                                            maxRows={10} // Maximum number of rows before scrolling
+                                            variant="outlined" // Using the outlined variant for styling
+                                            sx={{
+                                                // direction: 'ltr',
+                                                width: '100%',
+                                                '&::before': {
+                                                display: 'none',
+                                                },
+                                                '&:focus-within': {
+                                                outline: '0px solid var(--Textarea-focusedHighlight)',
+                                                },
+                                                // Styling the scrollbar
+                                                '&::-webkit-scrollbar': {
+                                                    width: '5px'  // Set the width of the scrollbar
+                                                },
+                                                '&::-webkit-scrollbar-track': {
+                                                    boxShadow: 'inset 0 0 5px grey',
+                                                    borderRadius: '10px'
+                                                },
+                                                '&::-webkit-scrollbar-thumb': {
+                                                    background: '#888',
+                                                    borderRadius: '10px'
+                                                },
+                                                '&::-webkit-scrollbar-thumb:hover': {
+                                                    background: '#555'
+                                                }
+                                            }}
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                borderColor: 'transparent',
+                                                color: '#9c9c9c',
+                                                overflowY: 'auto',  // Allow vertical scrolling when content exceeds the max rows
+                                                padding: '1vh 1vw 1vh 1vw',
+                                                outline: 'none',
+                                            }}
+                                            value={prompt}
+                                            onChange={e => setPrompt(e.target.value)}
+                                        />
+
+
+                                    <Button 
+                                        onClick={handleSendClick} 
+                                        startDecorator={<SendIcon />}
+                                        style={{
+                                            backgroundColor: 'transparent',
+                                            border: 'none',
+                                            boxShadow: 'none',
+                                            borderTopLeftRadius: 0,
+                                            borderBottomLeftRadius: 0,
+                                            padding: 0, // Set padding to zero
+                                            margin: 'auto 0vw 0.3vh 0vw'   // Set margin to zero
+                                        }}  
+                                    >
+                                    </Button>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </div>
+                </div>
+            </div>
+        // </CssVarsProvider>
     );
-  };  
-
-  return (
-    <MaterialCssVarsProvider theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
-      <JoyCssVarsProvider>
-
-    <ThemeProvider theme={theme}>
-      <div className="App" style={{ backgroundColor: theme.palette.background.default}}>
-        {/* Header */}
-        <div className="Header" style={{  padding: '0vh 5vw', margin: '0vw 0vw 3vh 0vw', backgroundColor: headerBackgroundColor }}>
-          <Grid container alignItems="center" justifyContent="space-between">
-            {/* Left side - Header */}
-            <Grid item>
-              <h1 style={{ color: theme.palette.text.primary }}>DocGPT</h1>
-            </Grid>
-            {/* Right side - Doc Button and Conversation Drop-Down */}
-            <Grid item>
-              {/* Nest the two buttons in a box to fit horizontally */}
-              <Box display="flex" alignItems="center">
-                <AddDocButton onNewDoc={handleNewDoc} /> 
-                <Button
-                  variant="contained"
-                  endIcon={<ArrowDropDownIcon />}
-                  onClick={handleConversationClick}
-                  sx={{ marginLeft: 2, borderRadius: '25px'  }} //pill-shaped
-                >
-                  New Conversation
-                </Button>
-                <Select
-                  // value={selectedOption}
-                  onChange={(event, value) => {
-                    if (value) {
-                      handleSelectChange(value as string);
-                    }
-                  }}
-                              
-                  // style={{ marginLeft: '8px', width: 'fit-content' }}
-                >
-                  <MenuItem value="option1">Option 1</MenuItem>
-                  <MenuItem value="option2">Option 2</MenuItem>
-                </Select>
-                <ModeToggle />
-
-              </Box>
-            </Grid>
-          </Grid>
-        </div>
-        
-        {/* stack holds the new doc button and prompt */}
-        <Stack alignItems={'center'}>
-          
-          {/* Modal for new doc below */}
-          <Dialog 
-            open={isModalOpen} 
-            onClose={handleCloseModal}
-            maxWidth="md" //medium width. can do lg, xl, false
-            fullWidth={true} //takes full width of container
-            PaperProps={{
-              sx: {
-                position: 'absolute',
-                top: '20%'
-                // marginTop: '10vh'
-              }
-            }}
-          >
-            <DialogTitle>Add New Document</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Enter the document name:
-              </DialogContentText>
-              <TextField
-                autoFocus
-                margin="dense"
-                id="docName"
-                label="Document Name"
-                fullWidth
-              />
-              <DialogActions>
-                <Button onClick={handleCloseModal} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={() => {
-                handleCloseModal();
-                // Any additional logic you want to run when the user confirms can go here.
-                }} color="primary">
-                  Add
-                </Button>
-              </DialogActions>
-
-            </DialogContent>
-          </Dialog>
-          {/* Grid that holds the prompt and send icon */}
-          <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          // style={{ height: '100vh' }}
-        >
-          <ChatPrompt isOpen={isOpen} onSend={handleSend}/>
-        </Grid>
-        {/* Display msg below ChatPrompt */}
-        {message && <Typography variant='body1' mt={2}>{message}</Typography> }
-
-        {/* MOVE THIS: */}
-        <Button onClick={() => setDarkMode(!darkMode)}>
-          Toggle Dark Mode
-        </Button>
-        </Stack>
-        
-
-        
-      </div>
-    </ThemeProvider>
-    </JoyCssVarsProvider>
-    </MaterialCssVarsProvider>
-  );
 }
 
 export default App;
