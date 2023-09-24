@@ -37,8 +37,8 @@ async function fetchParameters() {
     const accessIdResponse = await ssmClient.send(accessId);
     const secretKeyResponse = await ssmClient.send(secretKey);
     const envContent = `
-      REACT_APP_SECRET_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
-      REACT_APP_ACCESS_KEY=${secretKeyResponse.Parameter?.Value}
+      REACT_APP_SECRET_ACCESS_KEY=${secretKeyResponse.Parameter?.Value}
+      REACT_APP_ACCESS_KEY=${accessIdResponse.Parameter?.Value}
         `;
 
     const formattedEnv = envContent
