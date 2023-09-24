@@ -24,10 +24,11 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 
 
 ## What is the name of your App?
+DocGPT
 
 <br /><br />
 ## What does your app do?
-*Describe in a paragraph or so*
+We've all been overwhelmed by documentation while learning a new technology. This can hinder your learning and make you quickly lose interest on learning. DocGPT is a tool to solve exactly that problem. You can now talk to documentations in natural language and quickly gain information on what you want to learn about.
 
 <br /><br />
 
@@ -40,7 +41,7 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 - [ ]  Okta Challenge
 - [ ]  GEHA Generative AI Emergency Response Challenge
 - [ ]  Corporate Challenge (only for official company teams)
-- [ ]  College Challenge (only for teams of up to 5 CS students from the same school)
+- [ :joy:]  College Challenge (only for teams of up to 5 CS students from the same school)
 
 <br /><br />
 
